@@ -1,7 +1,7 @@
 # Linear Inverse modeling
 A LIM prototype.
 
-LIM_utils: some useful functions about LIM. detailed description is listed here.
+LIM_utils: some useful functions about LIM. detailed descriptions are listed here.
 
 LIM: main function to construt a LIM.
 
@@ -17,6 +17,6 @@ error test: ensure LIM's forecst are good and error growth is identical to the t
 
 optimal_state: related to forecasts of opportunity.
 
-forecast: use your LIM to do forecast.
+forecast: use your LIM to forecast.
 
 long_run: use LIM to run a climatogical experiment. Aims at climatology research.
