@@ -11,7 +11,7 @@ Q_test: ensure your LIM is accurately contrusted.
 
 tau_test: ensure the dynamical operator is insensitive to the selection of tau.
 
-heatmap: draw L.
+heatmap: draw *L*.
 
 error test: ensure LIM's forecst are good and error growth is identical to the theoretical growth.
 
