@@ -20,3 +20,5 @@ optimal_state: related to forecasts of opportunity.
 forecast: use your LIM to forecast.
 
 long_run: use LIM to run a climatogical experiment. Aims at climatology research.
+
+![这是图片](philly-magic-garden.9c0b4415.jpg)
