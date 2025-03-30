@@ -1,0 +1,2 @@
+# LIM
+Linear Inverse modeling
