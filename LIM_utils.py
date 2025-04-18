@@ -189,77 +189,7 @@ def Q_test(Q,Q_plot="no"):
             )
         plt.show()
 
-def Tau_test(data,tau0):
-    #The tau test is passed if the results are not overly sensitive to the choice of tau0. 
-    #So the lines plotted below should be close enough (with what determines 'close enough' determined by the user).
-
-    import numpy as np
-    from numpy import linalg as LA
-    import matplotlib.pyplot as plt
-    from   matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
-                               AutoMinorLocator)
-    import matplotlib.ticker as ticker
-
-    # Error will be computed out to 31 days (assuming data is supplied in daily form)
-    tau_arr     = np.arange(32)
-    # Define expected error for range of lags defined in main part of Section 5 above. 
-    if tau0<=5:
-        lags = np.arange(1,tau0+5,1) # Test lags from 1 to tau0+3 (need to give end point as +4 to get proper value)
-    else:
-        lags = np.arange(tau0-4,tau0+4,1) # Test lags from tau0-3 to tau0+3
-
-    all_epsilon = np.full([len(lags),len(tau_arr)],np.nan)  #Empty array to store error in 
-
-    for iT0 in range(len(lags)):
-        T0 = lags[iT0]
-    
-        #Carry out LIM with this value of lag
-        output = LIM(data,T0) 
-        c0_fnct = output['c0']; u_fnct = output['normU']; v_fnct = output['v']; g_fnct = output['g']
-        #b_alpha_fnct,L_fnct,Q_fnct,G_fnct,c0_fnct,cT_fnct,u_fnct,v_fnct,g_fnct,periods_fnct,decayT_fnct = LIM(data,T0)
-
-        #Make diagonal matrix of g
-        g_diag = np.zeros((np.shape(data)[0], np.shape(data)[0]), complex)
-        np.fill_diagonal(g_diag, g_fnct)
-    
-        # Compute the Green function for various values of Tau given T0
-        epsilon_tau = np.full([len(tau_arr)],np.nan)
-        for iT in range(len(tau_arr)):
-            G_tau  = np.dot(u_fnct,np.dot((g_diag)**(tau_arr[iT]/T0),np.transpose(v_fnct))).real
-
-            #Expected error 
-            all_epsilon[iT0, iT] = (c0_fnct - np.dot(G_tau, np.dot(c0_fnct,np.transpose(G_tau)) ) ).trace()
-
-    # Expected error on day 0, when conditions are known, is set to zero 
-    new_epsilon        = np.full([len(lags),len(tau_arr)],np.nan)
-    new_epsilon[:,0]   = 0                    
-    new_epsilon[:,1::] = all_epsilon[:,1::]
-
-    # Normalize by variance 
-    norm_epsilon = new_epsilon/np.nansum(np.nanvar(data,axis=1))
-
-    # Set up plot 
-    fig, ax1 = plt.subplots()
-    fig.set_size_inches(12,8)
-
-    # Plot each line for various choices of tau0 
-    for iT0 in range(len(lags)):
-        ax1.plot(tau_arr, norm_epsilon[iT0,:],label = r'$\tau_{0} = $'+str(lags[iT0]))
-
-    #ax1.set_xlabel(r'$\tau $',fontsize=16)
-    #ax1.set_ylabel(r'$\epsilon^{2} (\tau , \tau_0 ) $',fontsize=16)
-    ax1.set_xlabel('Lead time (days)',fontsize=16)
-    ax1.set_ylabel('Normalized error variance',fontsize=16)
-    ax1.legend(fontsize=14)
-    ax1.set_title('Tau Test',fontsize=16)
-    ax1.set_xlim([0,31])
-    ax1.set_ylim([0,1])
-    ax1.tick_params(labelsize=14)
-    #ax1.grid()
-    plt.show()
-
-
-def tau_test(data,tau0):
+def tau_test(data,tau0,yupper):
     #The tau test is passed if the results are not overly sensitive to the choice of tau0. 
     #So the lines plotted below should be close enough (with what determines 'close enough' determined by the user).
 
@@ -297,9 +227,9 @@ def tau_test(data,tau0):
     ax1.set_xlabel(r'$\tau_{0}$',fontsize=16)
     ax1.set_ylabel('Norm',fontsize=16)
     ax1.set_title('Tau test',fontsize=16)
-    ax1.set_xlim([0,20])
-    ax1.set_xticks(ticks=[0,2,4,6,8,10,12,14,16,18,20])
-    #ax1.set_ylim([0,30])
+    ax1.set_xlim([1,20])
+    ax1.set_xticks(ticks=[1,2,4,6,8,10,12,14,16,18,20])
+    ax1.set_ylim([0,yupper])
     ax1.tick_params(labelsize=14)
     #ax1.grid()
     plt.show()
@@ -349,24 +279,7 @@ def heatmap(data,tau0):
         ax.xaxis.tick_top()
         ax.set_xticks([])  # remove x tickers
         ax.set_yticks([])  # remove y tickers
-        # Set up labels and tick marks - x axis
-        #ax.set_xticks(np.arange(data.shape[0]+1))
-        # Hide major tick labels
-        #ax.xaxis.set_major_formatter(ticker.NullFormatter())
-        # Customize minor tick labels
-        #ax.xaxis.set_minor_locator(ticker.FixedLocator(np.arange(data.shape[0])+0.5))
-        #ax.xaxis.set_minor_formatter(ticker.FixedFormatter(stationIDs))
-        #FormatStrFormatter("%d")
-        # Set up labels and tick marks - y axis
-        #ax.set_yticks(np.arange(data.shape[0]+1))
-        # Hide major tick labels
-        #ax.yaxis.set_major_formatter(ticker.NullFormatter())
-        # Customize minor tick labels
-        #ax.yaxis.set_minor_locator(ticker.FixedLocator(np.arange(data.shape[0])+0.5))
-        #FormatStrFormatter("%d")
-        #ax.yaxis.set_minor_formatter(ticker.FixedFormatter(stationIDs))
-        #ax.tick_params(which='both',labelsize=14)
-        
+    
     cbar = fig.colorbar(
         im, 
         ax=axes.ravel().tolist(),
